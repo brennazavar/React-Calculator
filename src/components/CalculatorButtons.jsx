@@ -2,6 +2,14 @@ import React from "react";
 import Row from "./Row";
 import CalculatedRow from "./CalculatedRow";
 import BottomRow from "./BottomRow";
+import { useState } from "react";
+
+const [isDividend, setIsDividend] = useState(true);
+const [action, setAction] = useState(null);
+
+let calculatedValue = 0;
+let dividend = 0;
+let divisor = 0;
 
 const CalculatorButtons = () => {
   const rows = [
@@ -30,89 +38,118 @@ const CalculatorButtons = () => {
     "=",
   ];
 
+  function numberPress({ num }) {
+    return isDividend
+      ? (dividend = parseFloat(dividend + "" + num))
+      : (divisor = parseFloat(divisor + "" + num));
+  }
+
+  function calculate({ dividend, divisor, action }) {
+    if (divisor !== 0) {
+      switch (action) {
+        case "+":
+          return (calculatedValue = dividend + divisor);
+        case "-":
+          return (calculatedValue = dividend - divisor);
+        case "X":
+          return (calculatedValue = dividend * divisor);
+        case "/":
+          return (calculatedValue = dividend / divisor);
+        case "%":
+          return (calculatedValue = dividend % divisor);
+      }
+    } else {
+      calculatedValue = "error";
+    }
+  }
+
   const functions = [
     () => {
       // C
-      console.log("clicked");
+      dividend = 0;
+      divisor = 0;
+      calculatedValue = 0;
+      setAction(null);
     },
     () => {
       // +/-
-      console.log("clicked");
+      isDividend ? (dividend = -dividend) : (divisor = -divisor);
     },
     () => {
       // %
-      console.log("clicked");
+      setAction("%");
+      setIsDividend(false);
     },
     () => {
       // /
-      console.log("clicked");
+      setAction("/");
+      setIsDividend(false);
     },
     () => {
       // 7
-      console.log("clicked");
+      numberPress(7);
     },
     () => {
       // 8
-      console.log("clicked");
+      numberPress(8);
     },
     () => {
       // 9
-      console.log("clicked");
+      numberPress(9);
     },
     () => {
       // X
-      console.log("clicked");
+      setAction("X");
+      setIsDividend(false);
     },
     () => {
       // 4
-      console.log("clicked");
+      numberPress(4);
     },
     () => {
       // 5
-      console.log("clicked");
+      numberPress(5);
     },
-
     () => {
       // 6
-      console.log("clicked");
+      numberPress(6);
     },
     () => {
       // -
-      console.log("clicked");
+      setAction("-");
+      setIsDividend(false);
     },
     () => {
       // 1
-      console.log("clicked");
+      numberPress(1);
     },
     () => {
       // 2
-      console.log("clicked");
+      numberPress(2);
     },
     () => {
       // 3
-      console.log("clicked");
+      numberPress(3);
     },
     () => {
       // +
-      console.log("clicked");
+      setAction("+");
+      setIsDividend(false);
     },
     () => {
       // 0
-      console.log("clicked");
+      numberPress(0);
     },
     () => {
       // .
-      console.log("clicked");
+      numberPress(".");
     },
     () => {
       // =
-      console.log("clicked");
+      console.log("equals");
+      calculate(dividend, divisor, action);
     },
   ];
-
-  let calculatedValue = 0;
-  let dividend = null;
-  let divisor = null;
 
   return (
     <div className="grid grid-cols-1 gap-2">
