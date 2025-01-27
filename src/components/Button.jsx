@@ -4,12 +4,12 @@ const Button = ({ handleClick, styles, text = "X" }) => {
   return (
     <button
       className={
-        "p-4 border-black bg-white text-gray-900 border border-gray-200 " +
+        "bg-white text-gray-900 border border-gray-200 rounded-full w-[60px] h-[60px] " +
         styles
       }
       onClick={handleClick}
     >
-      {text}
+      <strong>{text}</strong>
     </button>
   );
 };

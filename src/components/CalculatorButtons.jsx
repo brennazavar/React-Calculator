@@ -115,10 +115,7 @@ const CalculatorButtons = () => {
   let divisor = null;
 
   return (
-    <div
-      className="grid grid-cols-1 w:full h:full"
-      onClick={() => console.log("clicked")}
-    >
+    <div className="grid grid-cols-1 gap-2">
       <CalculatedRow value={calculatedValue} />
       <Row values={rows.slice(0, 4)} functions={functions.slice(0, 4)} />
       <Row values={rows.slice(4, 8)} functions={functions.slice(4, 8)} />
