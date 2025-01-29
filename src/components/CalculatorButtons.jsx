@@ -4,14 +4,14 @@ import CalculatedRow from "./CalculatedRow";
 import BottomRow from "./BottomRow";
 import { useState } from "react";
 
-const [isDividend, setIsDividend] = useState(true);
-const [action, setAction] = useState(null);
-
-let calculatedValue = 0;
-let dividend = 0;
-let divisor = 0;
-
 const CalculatorButtons = () => {
+  const [isDividend, setIsDividend] = useState(true);
+  const [calculatedValue, setCalculatedValue] = useState(null);
+  const [dividend, setDividend] = useState(0);
+  const [divisor, setDivisor] = useState(0);
+  const [action, setAction] = useState(null);
+  const [isCarried, setIsCarried] = useState(false);
+
   const rows = [
     "C",
     "+/-",
@@ -38,129 +38,208 @@ const CalculatorButtons = () => {
     "=",
   ];
 
-  function numberPress({ num }) {
-    return isDividend
-      ? (dividend = parseFloat(dividend + "" + num))
-      : (divisor = parseFloat(divisor + "" + num));
-  }
-
-  function calculate({ dividend, divisor, action }) {
-    if (divisor !== 0) {
-      switch (action) {
-        case "+":
-          return (calculatedValue = dividend + divisor);
-        case "-":
-          return (calculatedValue = dividend - divisor);
-        case "X":
-          return (calculatedValue = dividend * divisor);
-        case "/":
-          return (calculatedValue = dividend / divisor);
-        case "%":
-          return (calculatedValue = dividend % divisor);
-      }
-    } else {
-      calculatedValue = "error";
-    }
-  }
-
   const functions = [
     () => {
       // C
-      dividend = 0;
-      divisor = 0;
-      calculatedValue = 0;
-      setAction(null);
+      handleClearClick();
     },
     () => {
       // +/-
-      isDividend ? (dividend = -dividend) : (divisor = -divisor);
+      handlePosNegClick();
     },
     () => {
       // %
-      setAction("%");
-      setIsDividend(false);
+      handleOperationClick("%");
     },
     () => {
       // /
-      setAction("/");
-      setIsDividend(false);
+      handleOperationClick("/");
     },
     () => {
       // 7
-      numberPress(7);
+      handleNumberClick(7);
     },
     () => {
       // 8
-      numberPress(8);
+      handleNumberClick(8);
     },
     () => {
       // 9
-      numberPress(9);
+      handleNumberClick(9);
     },
     () => {
       // X
-      setAction("X");
-      setIsDividend(false);
+      handleOperationClick("X");
     },
     () => {
       // 4
-      numberPress(4);
+      handleNumberClick(4);
     },
     () => {
       // 5
-      numberPress(5);
+      handleNumberClick(5);
     },
     () => {
       // 6
-      numberPress(6);
+      handleNumberClick(6);
     },
     () => {
       // -
-      setAction("-");
-      setIsDividend(false);
+      handleOperationClick("-");
     },
     () => {
       // 1
-      numberPress(1);
+      handleNumberClick(1);
     },
     () => {
       // 2
-      numberPress(2);
+      handleNumberClick(2);
     },
     () => {
       // 3
-      numberPress(3);
+      handleNumberClick(3);
     },
     () => {
       // +
-      setAction("+");
-      setIsDividend(false);
+      handleOperationClick("+");
     },
     () => {
       // 0
-      numberPress(0);
+      handleNumberClick(0);
     },
     () => {
       // .
-      numberPress(".");
+      handleDotClick();
     },
     () => {
       // =
-      console.log("equals");
-      calculate(dividend, divisor, action);
+      handleEqualsClick();
     },
   ];
 
+  function getValueAsNumber(val) {
+    return isNaN(parseFloat(val)) ? null : parseFloat(val);
+  }
+
+  function handleNumberClick(num) {
+    if (isDividend) {
+      (dividend === null) | isCarried
+        ? setDividend(getValueAsNumber(num))
+        : setDividend(getValueAsNumber(dividend + "" + num));
+    } else {
+      (divisor === null) | isCarried
+        ? setDivisor(getValueAsNumber(num))
+        : setDivisor(getValueAsNumber(divisor + "" + num));
+    }
+    console.log(dividend, divisor);
+    setIsCarried(false);
+  }
+
+  function handleDotClick() {
+    let str;
+    if (isDividend) {
+      str = dividend.toString();
+      if ((dividend === 0) | isCarried) {
+        setDividend("0.");
+      } else if (str.includes(".")) {
+        return;
+      } else {
+        setDividend(dividend + ".");
+      }
+    } else {
+      str = divisor.toString();
+      if ((divisor === 0) | isCarried) {
+        setDivisor("0.");
+      } else if (str.includes(".")) {
+        return;
+      } else {
+        setDivisor(divisor + ".");
+      }
+    }
+  }
+
+  function handleClearClick() {
+    setCalculatedValue(0);
+    setDividend(0);
+    setDivisor(0);
+    setIsDividend(true);
+    setCalculatedValue(0);
+    setIsCarried(false);
+    console.log(
+      calculatedValue,
+      dividend,
+      divisor,
+      isDividend,
+      calculatedValue
+    );
+  }
+
+  function handlePosNegClick() {
+    isDividend ? setDividend(-dividend) : setDivisor(-divisor);
+    console.log(dividend, divisor);
+  }
+
+  function handleOperationClick(operation) {
+    setAction(operation);
+    setIsDividend(false);
+    console.log(action, isDividend);
+    setIsCarried(false);
+  }
+
+  function handleEqualsClick() {
+    let value;
+    switch (action) {
+      case "%":
+        value = dividend % divisor;
+        break;
+      case "/":
+        value = dividend / divisor;
+        break;
+      case "X":
+        value = dividend * divisor;
+        break;
+      case "-":
+        value = dividend - divisor;
+        break;
+      case "+":
+        value = dividend + divisor;
+        break;
+      case null:
+        value = dividend;
+    }
+    setDividend(value);
+    setIsDividend(true);
+    setDivisor(0);
+    setIsCarried(true);
+  }
+
   return (
     <div className="grid grid-cols-1 gap-2">
-      <CalculatedRow value={calculatedValue} />
-      <Row values={rows.slice(0, 4)} functions={functions.slice(0, 4)} />
-      <Row values={rows.slice(4, 8)} functions={functions.slice(4, 8)} />
-      <Row values={rows.slice(8, 12)} functions={functions.slice(8, 12)} />
-      <Row values={rows.slice(12, 16)} functions={functions.slice(12, 16)} />
+      <CalculatedRow value={isDividend ? dividend : divisor} />
+      <Row
+        values={rows.slice(0, 4)}
+        functions={functions.slice(0, 4)}
+        styles="bg-gray-400 "
+      />
+      <Row
+        values={rows.slice(4, 8)}
+        functions={functions.slice(4, 8)}
+        styles="bg-white "
+      />
+      <Row
+        values={rows.slice(8, 12)}
+        functions={functions.slice(8, 12)}
+        styles="bg-white "
+      />
+      <Row
+        values={rows.slice(12, 16)}
+        functions={functions.slice(12, 16)}
+        styles="bg-white "
+      />
       <BottomRow
         values={rows.slice(16, 19)}
         functions={functions.slice(16, 19)}
+        styles="bg-white "
       />
     </div>
   );

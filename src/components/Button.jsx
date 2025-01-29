@@ -4,7 +4,7 @@ const Button = ({ handleClick, styles, text = "X" }) => {
   return (
     <button
       className={
-        "bg-white text-gray-900 border border-gray-200 rounded-full w-[60px] h-[60px] " +
+        "rounded-full w-[60px] h-[60px] hover:bg-gray-300 transition duration-100 ease-in-out " +
         styles
       }
       onClick={handleClick}
